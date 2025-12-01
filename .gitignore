@@ -1,0 +1,73 @@
+# Build artifacts
+*.o
+*.so
+*.a
+*.ko
+*.mod
+*.mod.c
+*.cmd
+.tmp_versions/
+Module.symvers
+modules.order
+
+# eBPF
+*.ll
+*.bc
+
+# Executables
+ddm_loader
+ddm_test
+*.exe
+
+# IDE and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+venv/
+.env
+
+# Logs
+*.log
+logs/
+*.out
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS specific
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Documentation build
+docs/_build/
+site/
+
+# Secrets and credentials
+*.key
+*.pem
+*.crt
+secrets.yaml
+.env.local
+
+# Test coverage
+coverage/
+*.coverage
+htmlcov/
+
+# Manifold data (if sensitive)
+# manifold.conf  # Uncomment if manifold contains sensitive domains

@@ -1,0 +1,116 @@
+graph TB
+    subgraph "Management Plane"
+        MGMT[Central Management Console]
+        GIT[Manifold Repository<br/>Git-backed]
+        POLICY[Policy Engine]
+        ANALYTICS[Analytics Dashboard]
+        TRANS_MON[Transparency Log<br/>Monitor]
+        
+        MGMT --> GIT
+        MGMT --> POLICY
+        MGMT --> ANALYTICS
+        MGMT --> TRANS_MON
+    end
+    
+    subgraph "Resolver Tier - Anycast"
+        HR1[Hermetic Resolver 1<br/>DC-East]
+        HR2[Hermetic Resolver 2<br/>DC-West]
+        HR3[Hermetic Resolver 3<br/>DC-Central]
+        
+        HR1 -.->|Sync| HR2
+        HR2 -.->|Sync| HR3
+        HR3 -.->|Sync| HR1
+    end
+    
+    subgraph "Endpoint Fleet"
+        subgraph "Workstations"
+            WS1[Laptop 1<br/>DDM Shim]
+            WS2[Laptop 2<br/>DDM Shim]
+            WS3[Desktop 1<br/>DDM Shim]
+        end
+        
+        subgraph "Servers"
+            SRV1[Web Server<br/>DDM Shim]
+            SRV2[API Server<br/>DDM Shim]
+            SRV3[Database Server<br/>DDM Shim]
+        end
+        
+        subgraph "Containers"
+            K8S[Kubernetes Cluster<br/>DDM DaemonSet]
+            POD1[Pod 1]
+            POD2[Pod 2]
+            POD3[Pod 3]
+            
+            K8S --> POD1
+            K8S --> POD2
+            K8S --> POD3
+        end
+        
+        subgraph "IoT/OT"
+            IOT1[IoT Device 1<br/>DDM Shim]
+            IOT2[IoT Device 2<br/>DDM Shim]
+            OT1[SCADA System<br/>DDM Shim]
+        end
+    end
+    
+    subgraph "External"
+        UPSTREAM[Public DNS<br/>8.8.8.8, 1.1.1.1]
+        TRANS_LOG[Public Transparency<br/>Logs]
+    end
+    
+    subgraph "SIEM/SOC"
+        SIEM[SIEM Platform]
+        SOC[SOC Dashboard]
+        ALERT[Alert System]
+        
+        SIEM --> SOC
+        SIEM --> ALERT
+    end
+    
+    POLICY -->|Distribute Manifold| WS1
+    POLICY -->|Distribute Manifold| WS2
+    POLICY -->|Distribute Manifold| WS3
+    POLICY -->|Distribute Manifold| SRV1
+    POLICY -->|Distribute Manifold| SRV2
+    POLICY -->|Distribute Manifold| SRV3
+    POLICY -->|Distribute Manifold| K8S
+    POLICY -->|Distribute Manifold| IOT1
+    POLICY -->|Distribute Manifold| IOT2
+    POLICY -->|Distribute Manifold| OT1
+    
+    WS1 -->|DNS + Proof| HR1
+    WS2 -->|DNS + Proof| HR2
+    WS3 -->|DNS + Proof| HR3
+    SRV1 -->|DNS + Proof| HR1
+    SRV2 -->|DNS + Proof| HR2
+    SRV3 -->|DNS + Proof| HR3
+    K8S -->|DNS + Proof| HR2
+    IOT1 -->|DNS + Proof| HR3
+    IOT2 -->|DNS + Proof| HR3
+    OT1 -->|DNS + Proof| HR3
+    
+    HR1 -.->|Recursive| UPSTREAM
+    HR2 -.->|Recursive| UPSTREAM
+    HR3 -.->|Recursive| UPSTREAM
+    
+    TRANS_MON -.->|Monitor| TRANS_LOG
+    
+    WS1 -->|Violations| SIEM
+    WS2 -->|Violations| SIEM
+    WS3 -->|Violations| SIEM
+    SRV1 -->|Violations| SIEM
+    SRV2 -->|Violations| SIEM
+    SRV3 -->|Violations| SIEM
+    K8S -->|Violations| SIEM
+    IOT1 -->|Violations| SIEM
+    IOT2 -->|Violations| SIEM
+    OT1 -->|Violations| SIEM
+    
+    SIEM -->|Metrics| ANALYTICS
+    
+    style MGMT fill:#e1f5ff
+    style HR1 fill:#fff4e1
+    style HR2 fill:#fff4e1
+    style HR3 fill:#fff4e1
+    style SIEM fill:#ffe1e1
+    style K8S fill:#e1ffe1

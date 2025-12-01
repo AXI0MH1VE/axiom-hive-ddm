@@ -1,0 +1,66 @@
+graph TB
+    subgraph "Application Layer"
+        APP[Applications<br/>Browsers, Services]
+    end
+    
+    subgraph "Kernel Space"
+        SHIM[DDM Kernel Shim<br/>eBPF/WFP]
+        INTERCEPT[DNS Interception]
+        ENTROPY[Entropy Filter<br/>Fixed-Point]
+        MANIFOLD_CHECK[Manifold Lookup]
+        PROOF_VERIFY[Merkle Proof<br/>Verification]
+        
+        SHIM --> INTERCEPT
+        INTERCEPT --> ENTROPY
+        ENTROPY --> MANIFOLD_CHECK
+        MANIFOLD_CHECK --> PROOF_VERIFY
+    end
+    
+    subgraph "Manifold Database"
+        EXACT[Exact Domains]
+        WILDCARD[Wildcard Patterns]
+        TEMPORAL[Temporal Entries]
+        
+        MANIFOLD_CHECK --> EXACT
+        MANIFOLD_CHECK --> WILDCARD
+        MANIFOLD_CHECK --> TEMPORAL
+    end
+    
+    subgraph "Hermetic Resolver"
+        RESOLVER[DNS Resolver]
+        MERKLE_DB[Merkle-Backed<br/>Zone Database]
+        TRANS_LOG[Transparency Log<br/>Client]
+        PROOF_GEN[Proof Generator]
+        
+        RESOLVER --> MERKLE_DB
+        RESOLVER --> TRANS_LOG
+        RESOLVER --> PROOF_GEN
+    end
+    
+    subgraph "External"
+        UPSTREAM[Public DNS/<br/>Upstream Resolvers]
+    end
+    
+    subgraph "Management Plane"
+        CONTROL[Control Plane]
+        POLICY[Policy Engine]
+        MONITOR[Monitoring &<br/>Analytics]
+        
+        CONTROL --> POLICY
+        CONTROL --> MONITOR
+    end
+    
+    APP -->|DNS Query| SHIM
+    PROOF_VERIFY -->|Authorized| RESOLVER
+    PROOF_VERIFY -->|Unauthorized| DROP[DROP + LOG]
+    RESOLVER -->|Response + Proof| PROOF_VERIFY
+    RESOLVER -.->|Recursive Query| UPSTREAM
+    
+    CONTROL -->|Update Manifold| EXACT
+    CONTROL -->|Update Manifold| WILDCARD
+    DROP -->|Violations| MONITOR
+    
+    style SHIM fill:#e1f5ff
+    style RESOLVER fill:#fff4e1
+    style DROP fill:#ffe1e1
+    style CONTROL fill:#e1ffe1

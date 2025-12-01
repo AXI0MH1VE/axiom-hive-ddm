@@ -1,0 +1,65 @@
+flowchart TD
+    START([Application DNS Query]) --> INTERCEPT[Kernel Shim<br/>Intercepts Query]
+    
+    INTERCEPT --> PARSE[Parse DNS Packet<br/>Extract QNAME]
+    
+    PARSE --> EXACT_CHECK{Exact Match<br/>in Manifold?}
+    
+    EXACT_CHECK -->|Yes| FOUND[Entry Found]
+    EXACT_CHECK -->|No| WILDCARD_CHECK{Wildcard Match<br/>in Manifold?}
+    
+    WILDCARD_CHECK -->|Yes| FOUND
+    WILDCARD_CHECK -->|No| NOT_FOUND[Not in Manifold]
+    
+    NOT_FOUND --> COMPUTE_ENT[Compute Entropy]
+    COMPUTE_ENT --> LOG_DROP[Log Violation<br/>Reason: Not in Manifold]
+    LOG_DROP --> DROP1[DROP Packet]
+    DROP1 --> END1([Query Blocked])
+    
+    FOUND --> TEMPORAL{Temporal Entry<br/>Expired?}
+    
+    TEMPORAL -->|Yes| LOG_EXPIRED[Log Violation<br/>Reason: Expired]
+    LOG_EXPIRED --> DROP2[DROP Packet]
+    DROP2 --> END2([Query Blocked])
+    
+    TEMPORAL -->|No| ENTROPY_CHECK{Entropy Bound<br/>Specified?}
+    
+    ENTROPY_CHECK -->|No| FORWARD
+    ENTROPY_CHECK -->|Yes| COMPUTE_ENT2[Compute Entropy]
+    
+    COMPUTE_ENT2 --> ENTROPY_COMPARE{Entropy ><br/>Threshold?}
+    
+    ENTROPY_COMPARE -->|Yes| LOG_ENTROPY[Log Violation<br/>Reason: Entropy Exceeded]
+    LOG_ENTROPY --> DROP3[DROP Packet]
+    DROP3 --> END3([Query Blocked])
+    
+    ENTROPY_COMPARE -->|No| FORWARD[Forward to<br/>Hermetic Resolver]
+    
+    FORWARD --> RESOLVER[Resolver Lookup]
+    RESOLVER --> MERKLE[Generate Merkle<br/>Inclusion Proof]
+    MERKLE --> RESPONSE[DNS Response +<br/>Merkle Proof]
+    
+    RESPONSE --> VERIFY[Kernel Shim<br/>Verifies Proof]
+    
+    VERIFY --> RECOMPUTE[Recompute<br/>Merkle Root]
+    RECOMPUTE --> ROOT_CHECK{Root Matches<br/>Pinned Root?}
+    
+    ROOT_CHECK -->|No| LOG_PROOF[Log Violation<br/>Reason: Invalid Proof]
+    LOG_PROOF --> DROP4[DROP Packet]
+    DROP4 --> END4([Query Blocked])
+    
+    ROOT_CHECK -->|Yes| ALLOW[ALLOW Packet]
+    ALLOW --> STATS[Update Statistics]
+    STATS --> END5([Response to Application])
+    
+    style START fill:#e1f5ff
+    style END1 fill:#ffe1e1
+    style END2 fill:#ffe1e1
+    style END3 fill:#ffe1e1
+    style END4 fill:#ffe1e1
+    style END5 fill:#e1ffe1
+    style DROP1 fill:#ffcccc
+    style DROP2 fill:#ffcccc
+    style DROP3 fill:#ffcccc
+    style DROP4 fill:#ffcccc
+    style ALLOW fill:#ccffcc

@@ -1,0 +1,64 @@
+graph TB
+    subgraph "Classical Lagrangian Mechanics"
+        CL[L = T - V]
+        CT[T: Kinetic Energy<br/>Motion, Velocity]
+        CV[V: Potential Energy<br/>Position, Configuration]
+        
+        CL --> CT
+        CL --> CV
+    end
+    
+    subgraph "Inverted Lagrangian for DNS Security"
+        IL[L_inv = V - T]
+        IT[T: Unauthorized Variance<br/>• High-entropy DNS<br/>• Unplanned flows<br/>• DNS tunneling<br/>• Anomalous behavior]
+        IV[V: Authorized Configuration<br/>• Closed Manifold<br/>• Pre-approved domains<br/>• Low-entropy patterns<br/>• Verified resolutions]
+        
+        IL --> IT
+        IL --> IV
+    end
+    
+    subgraph "Control Objective"
+        MAX[Maximize L_inv = V - T]
+        MAXV[Maximize V<br/>Stay in Manifold]
+        MINT[Minimize T<br/>Eliminate Variance]
+        
+        MAX --> MAXV
+        MAX --> MINT
+    end
+    
+    subgraph "Ideal State"
+        IDEAL[T = 0, V = V_max<br/>L_inv = V_max]
+        ZERO[Zero Unauthorized<br/>Entropy]
+        FULL[Full Manifold<br/>Compliance]
+        
+        IDEAL --> ZERO
+        IDEAL --> FULL
+    end
+    
+    subgraph "Enforcement"
+        CHECK{Query State}
+        IN_MAN[In Manifold<br/>V = V_max]
+        OUT_MAN[Outside Manifold<br/>V = 0]
+        
+        CHECK --> IN_MAN
+        CHECK --> OUT_MAN
+        
+        IN_MAN --> ENT_CHECK{Entropy Check}
+        ENT_CHECK -->|Low T| ALLOW[ALLOW<br/>L_inv ≈ V_max]
+        ENT_CHECK -->|High T| DROP1[DROP<br/>L_inv < threshold]
+        
+        OUT_MAN --> DROP2[DROP<br/>L_inv < 0]
+    end
+    
+    CL -.->|Conceptual Inversion| IL
+    IL -.->|Defines| MAX
+    MAX -.->|Target| IDEAL
+    IDEAL -.->|Enforced by| CHECK
+    
+    style CL fill:#e1e1ff
+    style IL fill:#ffe1e1
+    style MAX fill:#fff4e1
+    style IDEAL fill:#e1ffe1
+    style ALLOW fill:#ccffcc
+    style DROP1 fill:#ffcccc
+    style DROP2 fill:#ffcccc
