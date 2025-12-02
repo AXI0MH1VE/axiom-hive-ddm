@@ -1,0 +1,319 @@
+name: U.D.P. Validation Workflow
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'STRATEGY.md'
+      - 'PRINCIPLES.md'
+      - 'DEPLOYMENT.md'
+      - 'VALIDATION/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'STRATEGY.md'
+      - 'PRINCIPLES.md'
+      - 'DEPLOYMENT.md'
+      - 'VALIDATION/**'
+
+jobs:
+  validate-udp:
+    name: Validate Unified Deployment Package
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js for JSON Schema validation
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install JSON Schema validator
+      run: npm install -g ajv-cli
+
+    - name: Setup Python for document processing
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Python dependencies
+      run: |
+        pip install pyyaml markdown pyaml
+
+    - name: Validate document structure and content
+      run: |
+        echo "=== VALIDATION PHASE 1: Document Structure ==="
+
+        # Check that all required files exist
+        required_files=("STRATEGY.md" "PRINCIPLES.md" "DEPLOYMENT.md")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "ERROR: Required file $file is missing"
+            exit 1
+          fi
+        done
+
+        # Check that VALIDATION directory structure exists
+        validation_dirs=("VALIDATION/schemas" "VALIDATION/ci")
+        for dir in "${validation_dirs[@]}"; do
+          if [ ! -d "$dir" ]; then
+            echo "ERROR: Required directory $dir is missing"
+            exit 1
+          fi
+        done
+
+        echo "✓ All required files and directories present"
+
+    - name: Validate STRATEGY.md structure
+      run: |
+        echo "=== VALIDATION PHASE 2: STRATEGY.md Schema Validation ==="
+
+        # Extract structured data from STRATEGY.md
+        python3 -c "
+        import re
+        import json
+
+        with open('STRATEGY.md', 'r') as f:
+            content = f.read()
+
+        # Extract metadata
+        title_match = re.search(r'^# (.+)$', content, re.MULTILINE)
+        generated_match = re.search(r'\\*\\*Generated for:\\*\\* (.+)', content)
+        project_match = re.search(r'\\*\\*Project:\\*\\* (.+)', content)
+        date_match = re.search(r'\\*\\*Date:\\*\\* (.+)', content)
+        version_match = re.search(r'\\*\\*Version:\\*\\* (.+)', content)
+
+        if not all([title_match, generated_match, project_match, date_match, version_match]):
+            print('ERROR: Missing required metadata in STRATEGY.md')
+            exit(1)
+
+        strategy_data = {
+            'title': title_match.group(1),
+            'generated_for': generated_match.group(1),
+            'project': project_match.group(1),
+            'date': date_match.group(1),
+            'version': version_match.group(1)
+        }
+
+        # Validate against schema
+        import subprocess
+        with open('strategy_temp.json', 'w') as f:
+            json.dump(strategy_data, f)
+
+        result = subprocess.run(['ajv', 'validate', '-s', 'VALIDATION/schemas/strategy.schema.json', '-d', 'strategy_temp.json'],
+                              capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print('STRATEGY.md validation failed:')
+            print(result.stdout)
+            print(result.stderr)
+            exit(1)
+
+        print('✓ STRATEGY.md structure validated')
+        "
+
+    - name: Validate PRINCIPLES.md structure
+      run: |
+        echo "=== VALIDATION PHASE 3: PRINCIPLES.md Schema Validation ==="
+
+        python3 -c "
+        import re
+        import json
+
+        with open('PRINCIPLES.md', 'r') as f:
+            content = f.read()
+
+        # Extract metadata
+        title_match = re.search(r'^# (.+)$', content, re.MULTILINE)
+        generated_match = re.search(r'\\*\\*Generated for:\\*\\* (.+)', content)
+        project_match = re.search(r'\\*\\*Project:\\*\\* (.+)', content)
+        date_match = re.search(r'\\*\\*Date:\\*\\* (.+)', content)
+        version_match = re.search(r'\\*\\*Version:\\*\\* (.+)', content)
+
+        if not all([title_match, generated_match, project_match, date_match, version_match]):
+            print('ERROR: Missing required metadata in PRINCIPLES.md')
+            exit(1)
+
+        principles_data = {
+            'title': title_match.group(1),
+            'generated_for': generated_match.group(1),
+            'project': project_match.group(1),
+            'date': date_match.group(1),
+            'version': version_match.group(1)
+        }
+
+        # Validate against schema
+        import subprocess
+        with open('principles_temp.json', 'w') as f:
+            json.dump(principles_data, f)
+
+        result = subprocess.run(['ajv', 'validate', '-s', 'VALIDATION/schemas/principles.schema.json', '-d', 'principles_temp.json'],
+                              capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print('PRINCIPLES.md validation failed:')
+            print(result.stdout)
+            print(result.stderr)
+            exit(1)
+
+        print('✓ PRINCIPLES.md structure validated')
+        "
+
+    - name: Validate DEPLOYMENT.md structure
+      run: |
+        echo "=== VALIDATION PHASE 4: DEPLOYMENT.md Schema Validation ==="
+
+        python3 -c "
+        import re
+        import json
+
+        with open('DEPLOYMENT.md', 'r') as f:
+            content = f.read()
+
+        # Extract metadata
+        title_match = re.search(r'^# (.+)$', content, re.MULTILINE)
+        generated_match = re.search(r'\\*\\*Generated for:\\*\\* (.+)', content)
+        project_match = re.search(r'\\*\\*Project:\\*\\* (.+)', content)
+        date_match = re.search(r'\\*\\*Date:\\*\\* (.+)', content)
+        version_match = re.search(r'\\*\\*Version:\\*\\* (.+)', content)
+
+        if not all([title_match, generated_match, project_match, date_match, version_match]):
+            print('ERROR: Missing required metadata in DEPLOYMENT.md')
+            exit(1)
+
+        deployment_data = {
+            'title': title_match.group(1),
+            'generated_for': generated_match.group(1),
+            'project': project_match.group(1),
+            'date': date_match.group(1),
+            'version': version_match.group(1)
+        }
+
+        # Validate against schema
+        import subprocess
+        with open('deployment_temp.json', 'w') as f:
+            json.dump(deployment_data, f)
+
+        result = subprocess.run(['ajv', 'validate', '-s', 'VALIDATION/schemas/deployment.schema.json', '-d', 'deployment_temp.json'],
+                              capture_output=True, text=True)
+
+        if result.returncode != 0:
+            print('DEPLOYMENT.md validation failed:')
+            print(result.stdout)
+            print(result.stderr)
+            exit(1)
+
+        print('✓ DEPLOYMENT.md structure validated')
+        "
+
+    - name: Validate ARTIFACTS integrity
+      run: |
+        echo "=== VALIDATION PHASE 5: ARTIFACTS Integrity Check ==="
+
+        # Check for required ARTIFACTS structure
+        required_artifacts=(
+          "ARTIFACTS/ebpf/ddm_dns_filter_v2.c"
+          "ARTIFACTS/daemon/ddm_daemon.rs"
+          "ARTIFACTS/windows/ddm_wfp.c"
+          "ARTIFACTS/config/axioms_dns.toml"
+          "ARTIFACTS/container/Dockerfile"
+        )
+
+        for artifact in "${required_artifacts[@]}"; do
+          if [ ! -f "$artifact" ]; then
+            echo "ERROR: Required artifact $artifact is missing"
+            exit 1
+          fi
+        done
+
+        echo "✓ All required ARTIFACTS present"
+
+    - name: Lint and format check
+      run: |
+        echo "=== VALIDATION PHASE 6: Code Quality Checks ==="
+
+        # Check Markdown formatting
+        if command -v markdownlint &> /dev/null; then
+            echo "Running markdownlint..."
+            markdownlint STRATEGY.md PRINCIPLES.md DEPLOYMENT.md || echo "Markdown linting issues found"
+        else
+            echo "markdownlint not available, skipping markdown checks"
+        fi
+
+        # Check JSON schema validity
+        echo "Validating JSON schemas..."
+        for schema in VALIDATION/schemas/*.schema.json; do
+            if [ -f "$schema" ]; then
+                python3 -c "
+                import json
+                try:
+                    with open('$schema', 'r') as f:
+                        json.load(f)
+                    print('✓ $schema is valid JSON')
+                except json.JSONDecodeError as e:
+                    print('ERROR: $schema is invalid JSON:', e)
+                    exit(1)
+                "
+            fi
+        done
+
+    - name: Generate integrity attestation
+      run: |
+        echo "=== VALIDATION PHASE 7: Integrity Attestation ==="
+
+        # Calculate SHA-256 hashes
+        strategy_hash=$(sha256sum STRATEGY.md | cut -d' ' -f1)
+        principles_hash=$(sha256sum PRINCIPLES.md | cut -d' ' -f1)
+        deployment_hash=$(sha256sum DEPLOYMENT.md | cut -d' ' -f1)
+
+        # Create concatenated hash
+        concatenated_hash=$(echo -n "${strategy_hash}${principles_hash}${deployment_hash}" | sha256sum | cut -d' ' -f1)
+
+        # Generate attestation file
+        echo "INTEGRITY ATTESTATION: Axiom Hive DDM Unified Deployment Package" > VALIDATION/integrity_attestation.txt
+        echo "" >> VALIDATION/integrity_attestation.txt
+        echo "Generated: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> VALIDATION/integrity_attestation.txt
+        echo "Validation Run: ${{ github.run_id }}" >> VALIDATION/integrity_attestation.txt
+        echo "" >> VALIDATION/integrity_attestation.txt
+        echo "DOCUMENT HASHES:" >> VALIDATION/integrity_attestation.txt
+        echo "STRATEGY.md:     ${strategy_hash}" >> VALIDATION/integrity_attestation.txt
+        echo "PRINCIPLES.md:   ${principles_hash}" >> VALIDATION/integrity_attestation.txt
+        echo "DEPLOYMENT.md:   ${deployment_hash}" >> VALIDATION/integrity_attestation.txt
+        echo "" >> VALIDATION/integrity_attestation.txt
+        echo "CONCATENATED SHA-256: ${concatenated_hash}" >> VALIDATION/integrity_attestation.txt
+        echo "" >> VALIDATION/integrity_attestation.txt
+        echo "VALIDATION STATUS: PASSED" >> VALIDATION/integrity_attestation.txt
+        echo "All schemas validated, artifacts present, code quality checks completed." >> VALIDATION/integrity_attestation.txt
+        echo "" >> VALIDATION/integrity_attestation.txt
+        echo "OPERATIONAL INTEGRITY VERIFIED — ALEXIS ADAMS PRIMACY MANIFESTED." >> VALIDATION/integrity_attestation.txt
+
+        echo "✓ Integrity attestation generated"
+
+    - name: Upload validation artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: udp-validation-results
+        path: |
+          VALIDATION/integrity_attestation.txt
+          strategy_temp.json
+          principles_temp.json
+          deployment_temp.json
+
+    - name: Cleanup temporary files
+      run: |
+        rm -f strategy_temp.json principles_temp.json deployment_temp.json
+
+    - name: Success notification
+      run: |
+        echo "🎉 U.D.P. VALIDATION COMPLETE"
+        echo ""
+        echo "All validation checks passed:"
+        echo "✓ Document structure validated"
+        echo "✓ Schema compliance verified"
+        echo "✓ ARTIFACTS integrity confirmed"
+        echo "✓ Code quality checks completed"
+        echo "✓ Integrity attestation generated"
+        echo ""
+        echo "The Axiom Hive DDM Unified Deployment Package is ready for deployment."

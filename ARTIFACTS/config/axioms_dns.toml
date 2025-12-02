@@ -1,0 +1,244 @@
+# Axiom Hive DDM Configuration File
+# Production configuration for deterministic DNS filtering
+
+# Network Interface Configuration
+[interface]
+# Default network interface to attach eBPF filter
+name = "eth0"
+# MTU for the interface (0 = auto-detect)
+mtu = 0
+# Enable hardware offloading detection
+detect_offload = true
+
+# eBPF Program Configuration
+[ebpf]
+# Path to eBPF object file (relative to daemon directory)
+program_path = "ddm_dns_filter_v2.o"
+# Enable BPF CO-RE (Compile Once - Run Everywhere)
+core_enabled = true
+# BPF verifier strict mode
+strict_verification = true
+# Map pinning directory
+pin_path = "/sys/fs/bpf/axiom"
+
+# Manifold Policy Configuration
+[manifold]
+# Path to manifold configuration file
+config_file = "/etc/ddm/manifold.conf"
+# Default entropy threshold for new domains
+default_entropy_threshold = 4.2
+# Enable wildcard pattern matching
+wildcard_enabled = true
+# Maximum number of manifold entries
+max_entries = 100000
+# Policy timeout for temporary entries (seconds)
+default_ttl = 3600
+
+# Entropy Calculation Settings
+[entropy]
+# Fixed-point scale factor
+scale = 65536
+# Entropy lookup table size
+lut_size = 256
+# Minimum domain length to analyze
+min_length = 3
+# Maximum domain length to analyze
+max_length = 253
+# Character case sensitivity (true = case-sensitive)
+case_sensitive = false
+
+# Audit and Logging Configuration
+[audit]
+# Enable audit mode (log only, don't block)
+enabled = true
+# Ring buffer size (bytes)
+ring_buffer_size = 524288  # 512KB
+# Maximum events per second
+max_events_per_sec = 1000
+# Event retention period (seconds)
+retention_period = 86400   # 24 hours
+
+# Logging Configuration
+[logging]
+# Log level: trace, debug, info, warn, error
+level = "info"
+# Output format: json, text
+format = "json"
+# Log file path (empty = stdout)
+file_path = "/var/log/ddm/axiom.log"
+# Maximum log file size (MB)
+max_file_size = 100
+# Number of log files to keep
+max_files = 5
+# Log rotation interval (seconds)
+rotation_interval = 3600   # 1 hour
+
+# Prometheus Metrics Configuration
+[metrics]
+# Enable Prometheus metrics export
+enabled = true
+# Metrics server bind address
+bind_address = "0.0.0.0"
+# Metrics server port
+port = 9090
+# Metrics endpoint path
+path = "/metrics"
+# Metrics update interval (seconds)
+update_interval = 10
+# Include system metrics
+include_system_metrics = true
+
+# Security Configuration
+[security]
+# Tamper detection
+tamper_detection = true
+# Driver signing verification
+verify_signatures = true
+# Minimum driver version
+min_driver_version = "2.0.0"
+# Require privileged access
+require_privilege = true
+
+# Windows WFP Configuration (Windows only)
+[wfp]
+# Enable WFP filtering
+enabled = false  # Disabled by default, enable manually on Windows
+# WFP engine timeout (milliseconds)
+engine_timeout = 30000
+# Maximum callout registration attempts
+max_reg_attempts = 3
+# Filter weight for WFP engine
+filter_weight = 1
+
+# Geo-blocking Configuration
+[geo_blocking]
+# Enable geo-blocking
+enabled = false
+# Default country code for blocking (ISO 3166-1 alpha-2)
+default_blocked_country = "XX"
+# Geo-database update interval (seconds)
+db_update_interval = 86400
+# Geo-database source URL
+db_source_url = "https://api.axiom-hive.com/geo/v1/countries"
+
+# Performance Configuration
+[performance]
+# Maximum CPU usage for entropy calculation (%)
+max_cpu_percent = 5
+# Maximum memory usage (MB)
+max_memory_mb = 512
+# Packet processing batch size
+batch_size = 100
+# Enable performance profiling
+profiling = false
+
+# Integration Configuration
+[integrations]
+# SIEM integration
+siem = { enabled = false, endpoint = "", api_key = "" }
+# Splunk integration
+splunk = { enabled = false, endpoint = "", token = "" }
+# Elastic integration
+elastic = { enabled = false, endpoint = "", username = "", password = "" }
+
+# Policy Templates (predefined policy configurations)
+[policy_templates]
+# Strict policy for high-security environments
+strict = {
+    entropy_threshold = 3.0,
+    block_unknown = true,
+    audit_only = false
+}
+
+# Balanced policy for general use
+balanced = {
+    entropy_threshold = 4.2,
+    block_unknown = false,
+    audit_only = true
+}
+
+# Permissive policy for development
+permissive = {
+    entropy_threshold = 5.0,
+    block_unknown = false,
+    audit_only = true
+}
+
+# Emergency Configuration
+[emergency]
+# Break-glass domains (always allowed)
+break_glass_domains = [
+    "security.microsoft.com",
+    "windowsupdate.microsoft.com",
+    "update.microsoft.com",
+    "*.windows.com"
+]
+# Emergency contact information
+contact_info = "security@company.com"
+# Emergency escalation timeout (seconds)
+escalation_timeout = 300
+
+# Health Monitoring
+[health]
+# Enable health checks
+enabled = true
+# Health check endpoint
+endpoint = "/health"
+# Health check interval (seconds)
+interval = 30
+# Failed health check threshold
+failure_threshold = 3
+# Auto-recovery attempts
+auto_recovery = true
+
+# Backup and Recovery
+[backup]
+# Enable configuration backup
+enabled = true
+# Backup directory
+backup_dir = "/var/backups/ddm"
+# Backup interval (seconds)
+interval = 3600  # 1 hour
+# Keep last N backups
+keep_count = 24
+# Compression for backups
+compress = true
+
+# Rate Limiting
+[rate_limit]
+# Maximum DNS queries per second per IP
+max_queries_per_sec = 1000
+# Burst allowance for rate limiting
+burst_allowance = 100
+# Rate limiting window (seconds)
+window_size = 60
+
+# Notification Configuration
+[notifications]
+# Email notifications
+email = {
+    enabled = false,
+    smtp_server = "",
+    smtp_port = 587,
+    username = "",
+    password = "",
+    from_address = "",
+    to_addresses = []
+}
+
+# Webhook notifications
+webhook = {
+    enabled = false,
+    url = "",
+    headers = {},
+    timeout = 30
+}
+
+# SNMP notifications
+snmp = {
+    enabled = false,
+    community = "public",
+    host = "",
+    port = 162,
+    oid_base = "1.3.6.1.4.1.99999.1"
+}

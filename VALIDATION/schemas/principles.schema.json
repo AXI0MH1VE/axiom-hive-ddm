@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiom-hive.io/ddm/principles.schema.json",
+  "title": "Axiom Hive DDM Principles Document Schema",
+  "description": "JSON Schema for validating PRINCIPLES.md structure and content",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "pattern": "^PRINCIPLES\\.md:.*",
+      "description": "Document title with required format"
+    },
+    "generated_for": {
+      "type": "string",
+      "enum": ["Alexis M. Adams"],
+      "description": "Document must be generated for Alexis Adams"
+    },
+    "project": {
+      "type": "string",
+      "enum": ["Axiom Hive DNS Defense Module (DDM)"],
+      "description": "Project name must match exactly"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^December \\d{1,2}, \\d{4}$",
+      "description": "Date in format 'December DD, YYYY'"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Version in semantic format"
+    },
+    "core_architectural_principles": {
+      "type": "object",
+      "properties": {
+        "principles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "principle": {
+                "type": "string",
+                "description": "The principle statement"
+              },
+              "observation": {
+                "type": "string",
+                "description": "Contextual observation that led to the principle"
+              },
+              "implication": {
+                "type": "string",
+                "description": "Practical implications of following the principle"
+              }
+            },
+            "required": ["principle", "observation", "implication"]
+          },
+          "minItems": 5,
+          "description": "At least 5 core architectural principles"
+        }
+      },
+      "required": ["principles"]
+    },
+    "operational_principles": {
+      "type": "object",
+      "properties": {
+        "principles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "principle": {
+                "type": "string"
+              },
+              "observation": {
+                "type": "string"
+              },
+              "implication": {
+                "type": "string"
+              }
+            },
+            "required": ["principle", "observation", "implication"]
+          },
+          "minItems": 5,
+          "description": "At least 5 operational principles"
+        }
+      },
+      "required": ["principles"]
+    },
+    "implementation_principles": {
+      "type": "object",
+      "properties": {
+        "principles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "principle": {
+                "type": "string"
+              },
+              "observation": {
+                "type": "string"
+              },
+              "implication": {
+                "type": "string"
+              }
+            },
+            "required": ["principle", "observation", "implication"]
+          },
+          "minItems": 5,
+          "description": "At least 5 implementation principles"
+        }
+      },
+      "required": ["principles"]
+    },
+    "business_economic_principles": {
+      "type": "object",
+      "properties": {
+        "principles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "principle": {
+                "type": "string"
+              },
+              "observation": {
+                "type": "string"
+              },
+              "implication": {
+                "type": "string"
+              }
+            },
+            "required": ["principle", "observation", "implication"]
+          },
+          "minItems": 5,
+          "description": "At least 5 business and economic principles"
+        }
+      },
+      "required": ["principles"]
+    },
+    "validation_requirements": {
+      "type": "object",
+      "properties": {
+        "structure_validation": {
+          "type": "string",
+          "description": "Statement about principles being distilled from technical analysis"
+        },
+        "integrity_statement": {
+          "type": "string",
+          "pattern": ".*OPERATIONAL INTEGRITY VERIFIED.*",
+          "description": "Must end with integrity statement"
+        }
+      },
+      "required": ["structure_validation", "integrity_statement"]
+    }
+  },
+  "required": [
+    "title",
+    "generated_for",
+    "project",
+    "date",
+    "version",
+    "core_architectural_principles",
+    "operational_principles",
+    "implementation_principles",
+    "business_economic_principles",
+    "validation_requirements"
+  ]
+}

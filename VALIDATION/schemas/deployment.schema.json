@@ -1,0 +1,529 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiom-hive.io/ddm/deployment.schema.json",
+  "title": "Axiom Hive DDM Deployment Document Schema",
+  "description": "JSON Schema for validating DEPLOYMENT.md structure and content",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "pattern": "^DEPLOYMENT\\.md:.*",
+      "description": "Document title with required format"
+    },
+    "generated_for": {
+      "type": "string",
+      "enum": ["Alexis M. Adams"],
+      "description": "Document must be generated for Alexis Adams"
+    },
+    "project": {
+      "type": "string",
+      "enum": ["Axiom Hive DNS Defense Module (DDM)"],
+      "description": "Project name must match exactly"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^December \\d{1,2}, \\d{4}$",
+      "description": "Date in format 'December DD, YYYY'"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Version in semantic format"
+    },
+    "executive_summary": {
+      "type": "object",
+      "properties": {
+        "key_characteristics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": ".*[<≥]\\d+.*",
+            "description": "Must include measurable performance characteristics"
+          },
+          "minItems": 4,
+          "description": "Key deployment characteristics with measurable metrics"
+        }
+      },
+      "required": ["key_characteristics"]
+    },
+    "prerequisites": {
+      "type": "object",
+      "properties": {
+        "system_requirements": {
+          "type": "object",
+          "properties": {
+            "linux": {
+              "type": "object",
+              "properties": {
+                "kernel_version": {
+                  "type": "string",
+                  "pattern": "\\d+\\.\\d+.*",
+                  "description": "Kernel version range"
+                },
+                "architecture": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                },
+                "dependencies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": ["kernel_version", "architecture", "memory", "dependencies"]
+            },
+            "windows": {
+              "type": "object",
+              "properties": {
+                "os_version": {
+                  "type": "string",
+                  "pattern": "Windows \\d+.*",
+                  "description": "Windows version requirements"
+                },
+                "architecture": {
+                  "type": "string"
+                },
+                "memory": {
+                  "type": "string"
+                },
+                "dependencies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": ["os_version", "architecture", "memory", "dependencies"]
+            }
+          },
+          "required": ["linux", "windows"]
+        },
+        "security_prerequisites": {
+          "type": "object",
+          "properties": {
+            "certificates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Certificate requirements"
+            },
+            "infrastructure": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Infrastructure requirements"
+            }
+          },
+          "required": ["certificates", "infrastructure"]
+        }
+      },
+      "required": ["system_requirements", "security_prerequisites"]
+    },
+    "build_packaging": {
+      "type": "object",
+      "properties": {
+        "linux_build": {
+          "type": "object",
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(git|make|cd|cp|mkdir).*$",
+                "description": "Valid build commands"
+              }
+            },
+            "outputs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["commands", "outputs"]
+        },
+        "windows_build": {
+          "type": "object",
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "outputs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["commands", "outputs"]
+        },
+        "container_packaging": {
+          "type": "string",
+          "description": "Dockerfile content or reference"
+        }
+      },
+      "required": ["linux_build", "windows_build", "container_packaging"]
+    },
+    "production_deployment": {
+      "type": "object",
+      "properties": {
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "phase": {
+                "type": "string",
+                "enum": ["Phase 1: Observability Mode (AUDIT)", "Phase 2: Enforcement Mode (ENFORCE)", "Phase 3: Proof-of-Resolution (TRUST)"]
+              },
+              "deployment_steps": {
+                "type": "object",
+                "properties": {
+                  "linux": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "windows": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["linux", "windows"]
+              },
+              "configuration": {
+                "type": "object",
+                "properties": {
+                  "policy_settings": {
+                    "type": "object"
+                  },
+                  "security_parameters": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "required": ["phase", "deployment_steps"]
+          },
+          "minItems": 3,
+          "description": "Three deployment phases"
+        }
+      },
+      "required": ["phases"]
+    },
+    "monitoring_observability": {
+      "type": "object",
+      "properties": {
+        "prometheus_setup": {
+          "type": "object",
+          "properties": {
+            "config": {
+              "type": "string",
+              "description": "Prometheus configuration"
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^ddm_.*",
+                "description": "DDM-specific metrics"
+              }
+            }
+          },
+          "required": ["config", "metrics"]
+        },
+        "grafana_dashboard": {
+          "type": "object",
+          "properties": {
+            "structure": {
+              "type": "string"
+            },
+            "panels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "alerting_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "alert": {
+                "type": "string"
+              },
+              "condition": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["warning", "critical"]
+              }
+            },
+            "required": ["alert", "condition", "severity"]
+          },
+          "minItems": 3,
+          "description": "At least 3 alerting rules"
+        }
+      },
+      "required": ["prometheus_setup", "alerting_rules"]
+    },
+    "operations_maintenance": {
+      "type": "object",
+      "properties": {
+        "routine_operations": {
+          "type": "object",
+          "properties": {
+            "daily_checks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "weekly_maintenance": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "monthly_reporting": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["daily_checks", "weekly_maintenance", "monthly_reporting"]
+        },
+        "policy_management": {
+          "type": "object",
+          "properties": {
+            "domain_addition": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "wildcard_updates": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["domain_addition", "wildcard_updates"]
+        }
+      },
+      "required": ["routine_operations", "policy_management"]
+    },
+    "rollback_recovery": {
+      "type": "object",
+      "properties": {
+        "emergency_rollback": {
+          "type": "object",
+          "properties": {
+            "complete_disable": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Commands for complete system disable"
+            },
+            "graceful_degradation": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Commands for graceful degradation"
+            },
+            "component_recovery": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Commands for component-level recovery"
+            }
+          },
+          "required": ["complete_disable", "graceful_degradation", "component_recovery"]
+        },
+        "disaster_recovery": {
+          "type": "object",
+          "properties": {
+            "backup_restore": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "rebuild_procedures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["backup_restore", "rebuild_procedures"]
+        }
+      },
+      "required": ["emergency_rollback", "disaster_recovery"]
+    },
+    "cost_performance": {
+      "type": "object",
+      "properties": {
+        "benchmarks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string",
+                "pattern": ".*[<≥]\\d+.*",
+                "description": "Measurable target with comparison operator"
+              },
+              "test_command": {
+                "type": "string"
+              }
+            },
+            "required": ["metric", "target", "test_command"]
+          },
+          "minItems": 4,
+          "description": "Performance benchmark table"
+        },
+        "cost_optimization": {
+          "type": "object",
+          "properties": {
+            "infrastructure_costs": {
+              "type": "object"
+            },
+            "operational_costs": {
+              "type": "object"
+            },
+            "scaling_economics": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": ["benchmarks", "cost_optimization"]
+    },
+    "security_considerations": {
+      "type": "object",
+      "properties": {
+        "secret_management": {
+          "type": "object",
+          "properties": {
+            "key_storage": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "configuration_encryption": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["key_storage", "configuration_encryption"]
+        },
+        "compliance_integration": {
+          "type": "object",
+          "properties": {
+            "nist_sc_7": {
+              "type": "object"
+            },
+            "iso_27001": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "required": ["secret_management", "compliance_integration"]
+    },
+    "troubleshooting": {
+      "type": "object",
+      "properties": {
+        "common_issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "issue": {
+                "type": "string"
+              },
+              "symptoms": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "resolution": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": ["issue", "symptoms", "resolution"]
+          },
+          "minItems": 3,
+          "description": "At least 3 common issues with resolutions"
+        },
+        "debug_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Debug mode operation commands"
+        }
+      },
+      "required": ["common_issues", "debug_operations"]
+    },
+    "validation_statement": {
+      "type": "string",
+      "pattern": ".*OPERATIONAL INTEGRITY VERIFIED.*",
+      "description": "Must end with integrity statement"
+    }
+  },
+  "required": [
+    "title",
+    "generated_for",
+    "project",
+    "date",
+    "version",
+    "executive_summary",
+    "prerequisites",
+    "build_packaging",
+    "production_deployment",
+    "monitoring_observability",
+    "operations_maintenance",
+    "rollback_recovery",
+    "cost_performance",
+    "security_considerations",
+    "troubleshooting",
+    "validation_statement"
+  ]
+}
