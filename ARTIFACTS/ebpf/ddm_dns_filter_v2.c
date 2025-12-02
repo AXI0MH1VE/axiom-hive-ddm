@@ -12,6 +12,12 @@
  * - CO-RE compatibility optimizations
  */
 
+#ifndef __has_include
+#define __has_include(x) 0
+#endif
+
+#if __has_include(<linux/bpf.h>)
+#include <linux/types.h>
 #include <linux/bpf.h>
 #include <linux/pkt_cls.h>
 #include <linux/if_ether.h>
@@ -24,6 +30,9 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 #include <bpf/bpf_tracing.h>
+#else
+#include "bpf_compat_shim.h"
+#endif
 
 #define DNS_PORT 53
 #define MAX_QNAME_LEN 253
@@ -217,7 +226,7 @@ static __always_inline int log_violation_safe(
     __u32 bp_key = 0;
     __u64 *bp_stats = bpf_map_lookup_elem(&backpressure_stats, &bp_key);
     if (bp_stats && *bp_stats > 10000) {  // Too many drops
-        update_stats(&bp_stats);  // Count backpressure drop
+        update_backpressure(1);  // Count backpressure drop
         return -1;
     }
 

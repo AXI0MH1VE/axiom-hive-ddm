@@ -11,13 +11,23 @@
  * - Tamper detection and protection
  */
 
+#ifndef __has_include
+#define __has_include(x) 0
+#endif
+
+#if __has_include(<ntddk.h>)
 #include <ntddk.h>
 #include <fwpsk.h>
 #include <fwpmk.h>
 #include <guiddef.h>
+#else
+#include "wfp_compat_shim.h"
+#endif
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 // Driver version
 #define DDM_WFP_VERSION_MAJOR 2
