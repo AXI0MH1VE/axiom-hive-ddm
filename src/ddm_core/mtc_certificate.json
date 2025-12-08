@@ -1,0 +1,27 @@
+{
+    "merkle_root": "f2112f4b26a31211b49a2e86dc42974587afc764b12baf0e35ce8a85a985f031",
+    "timestamp": "2025-12-07 20:17:17",
+    "domain_count": 5,
+    "proofs": {
+        "axiom-hive.io": {
+            "hash": "0cb66d149e49c6ef441226e4029fed4d444b4e6cf6b2d8af605cf7392eeec58f",
+            "root": "f2112f4b26a31211b49a2e86dc42974587afc764b12baf0e35ce8a85a985f031"
+        },
+        "github.com": {
+            "hash": "3aeb002460381c6f258e8395d3026f571f0d9a76488dcd837639b13aed316560",
+            "root": "f2112f4b26a31211b49a2e86dc42974587afc764b12baf0e35ce8a85a985f031"
+        },
+        "google.com": {
+            "hash": "d4c9d9027326271a89ce51fcaf328ed673f17be33469ff979e8ab8dd501e664f",
+            "root": "f2112f4b26a31211b49a2e86dc42974587afc764b12baf0e35ce8a85a985f031"
+        },
+        "pypi.org": {
+            "hash": "a4aa2ac280bb8d1a0ce7a1be5a7bfb10292b49fe9435ad5cff19f421f3c70e41",
+            "root": "f2112f4b26a31211b49a2e86dc42974587afc764b12baf0e35ce8a85a985f031"
+        },
+        "ubuntu.com": {
+            "hash": "344aa72d23ae6fdb53533dc6bad944eb874c7b55d0b4d4f98fa0ec37f8d5ecc4",
+            "root": "f2112f4b26a31211b49a2e86dc42974587afc764b12baf0e35ce8a85a985f031"
+        }
+    }
+}
