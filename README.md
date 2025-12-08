@@ -8,6 +8,14 @@
 
 The **Axiom Hive DNS Defense Module (DDM)** is a deterministic network security framework that replaces probabilistic DNS threat detection with strict enforcement of authorized network behavior. Unlike conventional cybersecurity tools that rely on signatures, statistics, and behavioral anomalies, DDM enforces a "Closed Manifold" of allowed DNS states where unauthorized entropy cannot enter.
 
+### Current Status: Minimal Viable Component (MVC)
+
+To transition from a research-only project to an **incomplete, working, functional product for distribution**, we have implemented a basic, user-space proof-of-concept called the **Simple Manifold Filter**. This component demonstrates the core "Prove or Drop" logic of the DDM architecture using a predefined list of authorized domains.
+
+## Core Principles
+
+The **Axiom Hive DNS Defense Module (DDM)** is a deterministic network security framework that replaces probabilistic DNS threat detection with strict enforcement of authorized network behavior. Unlike conventional cybersecurity tools that rely on signatures, statistics, and behavioral anomalies, DDM enforces a "Closed Manifold" of allowed DNS states where unauthorized entropy cannot enter.
+
 ### Key Innovation
 
 DDM transitions DNS security from **"guess and score"** to **"prove or drop"**—implementing a **"Verify then Connect"** model rather than "Trust but Verify."
@@ -133,6 +141,32 @@ The DDM has been analyzed for technical feasibility across five critical axes:
 - **Build Tools**: Clang/LLVM (Linux), Visual Studio with WDK (Windows)
 
 ### Quick Start
+
+The quickest way to see the core DDM principle in action is to use the Simple Manifold Filter (MVC).
+
+#### Simple Manifold Filter (MVC)
+
+This is a user-space Python script that simulates the "Prove or Drop" logic against a hardcoded list of authorized domains (the "Closed Manifold").
+
+1.  **Run an Allowed Domain Check (Proof-of-Resolution: Verified)**
+    ```bash
+    ./src/mvc_simple_filter/ddm_filter.py axiom-hive.io
+    # Expected Output: [axiom-hive.io] -> ALLOWED (Proof-of-Resolution: Verified)
+    ```
+
+2.  **Run a Blocked Domain Check (Zero Entropy Violation: Unauthorized Domain)**
+    ```bash
+    ./src/mvc_simple_filter/ddm_filter.py bad-domain.com
+    # Expected Output: [bad-domain.com] -> DROPPED (Zero Entropy Violation: Unauthorized Domain)
+    ```
+
+3.  **View/Edit the Closed Manifold**
+    The list of authorized domains is located at:
+    ```
+    src/mvc_simple_filter/manifold.txt
+    ```
+
+### Prerequisites
 
 ```bash
 # Clone the repository
