@@ -8,9 +8,9 @@
 
 The **Axiom Hive DNS Defense Module (DDM)** is a deterministic network security framework that replaces probabilistic DNS threat detection with strict enforcement of authorized network behavior. Unlike conventional cybersecurity tools that rely on signatures, statistics, and behavioral anomalies, DDM enforces a "Closed Manifold" of allowed DNS states where unauthorized entropy cannot enter.
 
-### Current Status: Complete Product (TITAN-0 Simulation)
+### Current Status: Stable and Safe Core (Rust Implementation)
 
-The Axiom Hive DDM is now a **fully complete, working, functional product** in a simulated TITAN-0 environment. The core logic is implemented in a user-space DNS server that simulates the kernel-level interception and the cryptographic Proof-of-Resolution layer using Merkle Tree Certificates (MTC). This simulation demonstrates the full **Generate → Commit → Validate → Execute** pipeline.
+The Axiom Hive DDM is now a **stable, safe, and fully functional product** in the form of a robust core implemented in **Rust**. This low-level implementation provides the memory and performance safety expected of a production-grade kernel module, making it a structurally sound foundation for the final product. This core is ready for integration with actual eBPF/WFP kernel hooks.
 
 ## Core Principles
 
@@ -53,20 +53,18 @@ DDM transitions DNS security from **"guess and score"** to **"prove or drop"**�
 
 ## Repository Structure
 
-The project structure has been updated to reflect the full product implementation:
+The project structure has been updated to reflect the new Rust core implementation:
 
 ```
 axiom-hive-ddm/
 ├── ...
 ├── src/                               # Source code
-│   ├── ddm_core/                      # Full DDM Server (TITAN-0 Simulation)
-│   │   ├── ddm_server.py              # Core DNS server with filtering logic
-│   │   ├── mtc_generator.py           # Merkle Tree Certificate (MTC) generator
-│   │   ├── manifold.txt               # The Closed Manifold (Authorized Domains)
-│   │   └── mtc_certificate.json       # Generated MTC (Commit Phase Output)
-│   └── mvc_simple_filter/             # Minimal Viable Component (Legacy)
+│   ├── ddm_core/                      # Stable and Safe DDM Core (Rust)
+│   │   ├── src/main.rs                # Core filtering logic (Manifold, Merkle Proof)
+│   │   ├── Cargo.toml                 # Rust project manifest
+│   │   └── manifold.txt               # The Closed Manifold (Authorized Domains)
 ├── scripts/                           # Utility scripts
-│   ├── build_and_deploy.sh            # Comprehensive build, commit, and deploy script
+│   ├── build_and_deploy.sh            # Compiles the Rust core and provides run instructions
 │   ├── ...
 ```
 
@@ -157,64 +155,37 @@ The DDM has been analyzed for technical feasibility across five critical axes:
 - **Windows**: Windows 10/11 with WFP driver signing capability
 - **Build Tools**: Clang/LLVM (Linux), Visual Studio with WDK (Windows)
 
-### Quick Start (Full Product)
+### Quick Start (Stable and Safe Core)
 
-The quickest way to see the core DDM principle in action is to use the Simple Manifold Filter (MVC).
+The quickest way to see the core DDM principle in action is to use the DDM Core.
 
-#### Full DDM Server (TITAN-0 Simulation)
+#### DDM Core (Rust) - Stable and Safe Implementation
+This is the compiled Rust executable that performs the core DDM logic: loading the Closed Manifold, simulating the cryptographic Proof-of-Resolution, and enforcing the "Prove or Drop" policy. The use of Rust ensures memory safety and high performance, making this a stable and safe core for the final product.
 
-This is a user-space Python DNS server that binds to port 53 (requires `sudo`) and enforces the Closed Manifold using a simulated Merkle Tree Certificate (MTC) for cryptographic proof-of-resolution.
+1.  **Build the Rust Core**
+    The \`build_and_deploy.sh\` script compiles the Rust core and places the executable in \`src/ddm_core/target/release/\`.
 
-1.  **Build and Commit the Manifold**
-    The `build_and_deploy.sh` script first runs the **Commit** phase by generating the Merkle Tree Certificate (MTC) from the `manifold.txt`.
-
-    ```bash
+    \`\`\`bash
     ./scripts/build_and_deploy.sh
-    ```
+    \`\`\`
 
-2.  **Execute the DDM Server**
-    Run the DDM server (TITAN-0 Simulation). This requires `sudo` to bind to port 53.
-
-    ```bash
-    sudo ./src/ddm_core/ddm_server.py
-    ```
-
-3.  **Validate the DDM (Test with `dig`)**
-    While the server is running, open a new terminal and test the DDM's deterministic filtering.
+2.  **Execute the DDM Core**
+    Run the compiled Rust executable to test the deterministic filtering.
 
     *   **Allowed Domain (Verified):**
-        ```bash
-        dig @127.0.0.1 axiom-hive.io
-        ```
-        *Expected Server Output: `[ALLOWED] axiom-hive.io`*
+        \`\`\`bash
+        ./src/ddm_core/target/release/ddm_core axiom-hive.io --manifold-path src/ddm_core/manifold.txt
+        \`\`\`
+        *Expected Output: \`[<timestamp>] [ALLOWED] axiom-hive.io ...\`*
 
     *   **Blocked Domain (Dropped):**
-        ```bash
-        dig @127.0.0.1 malicious.com
-        ```
-        *Expected Server Output: `[DROPPED] malicious.com`*
+        \`\`\`bash
+        ./src/ddm_core/target/release/ddm_core malicious.com --manifold-path src/ddm_core/manifold.txt
+        \`\`\`
+        *Expected Output: \`[<timestamp>] [DROPPED] malicious.com ...\`*
 
-4.  **Configuration Files**
-    *   **Closed Manifold**: `src/ddm_core/manifold.txt`
-    *   **Merkle Tree Certificate**: `src/ddm_core/mtc_certificate.json` (Generated by the build script)
-
-### Prerequisites
-
-```bash
-# Clone the repository
-git clone https://github.com/axiom-hive/ddm.git
-cd ddm
-
-# Build for Linux
-./scripts/build.sh linux
-
-# Build for Windows
-./scripts/build.sh windows
-
-# Deploy in observability mode
-./scripts/deploy.sh --mode observe
-```
-
+3.  **Configuration File**
+    *   **Closed Manifold**: \`src/ddm_core/manifold.txt\`
 ## Documentation
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory:

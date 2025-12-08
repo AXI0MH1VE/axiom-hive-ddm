@@ -1,9 +1,0 @@
-# The Closed Manifold: List of authorized domains
-# This file represents the deterministic, pre-declared state space of allowed DNS resolutions.
-# Only domains listed here will be "resolved" (simulated as "ALLOWED").
-
-axiom-hive.io
-google.com
-github.com
-pypi.org
-ubuntu.com
