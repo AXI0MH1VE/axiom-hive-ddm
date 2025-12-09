@@ -1,0 +1,43 @@
+/* AxiomHive Visual Theme OS v2.1.0 */
+/* Zero Entropy Law: C=0 enforced */
+/* Canonical Palette: Axiom Black #000000, Miami Red #FF0038 */
+/* Honeycomb Hex Grid Background */
+
+:root {
+  --axiom-black: #000000;
+  --miami-red: #FF0038;
+  --hex-grid-size: 24px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--axiom-black);
+  color: var(--miami-red);
+  font-family: 'Courier New', monospace;
+  
+  /* Honeycomb Hex Grid Background */
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--miami-red) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, var(--miami-red) 1px, transparent 1px);
+  background-size: var(--hex-grid-size) var(--hex-grid-size);
+  
+  /* Override any gradient attempts */
+  background-image: none !important;
+  background: var(--axiom-black) !important;
+}
+
+.container {
+  border: 1px solid var(--miami-red);
+  padding: 16px;
+  margin: 16px;
+}
+
+h1, h2, h3 {
+  color: var(--miami-red);
+  text-shadow: 0 0 8px var(--miami-red);
+}

@@ -1,0 +1,19 @@
+[package]
+name = "toon-rs"
+version = "2.1.0"
+edition = "2021"
+authors = ["AxiomHive Team"]
+description = "TOON Parser with Guardrail regex enforcement - Zero Entropy Law: C=0"
+
+[dependencies]
+regex = "1.10"
+
+[features]
+frozen-seed = []
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "toon-rs"
+path = "src/lib.rs"

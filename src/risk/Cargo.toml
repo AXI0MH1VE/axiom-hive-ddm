@@ -1,0 +1,16 @@
+[package]
+name = "risk-calculator"
+version = "2.1.0"
+edition = "2021"
+authors = ["AxiomHive Team"]
+description = "OLO Risk Engine - Inverted Lagrangian Optimization - Zero Entropy Law: C=0"
+
+[dependencies]
+sha2 = "0.10"
+
+[features]
+frozen-seed = []
+
+[[bin]]
+name = "risk_calculator"
+path = "src/main.rs"

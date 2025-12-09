@@ -1,0 +1,37 @@
+{
+  "file_tree": {
+    "src": {
+      "core": {
+        "toon-rs": {
+          "Cargo.toml": "Rust package manifest",
+          "src": {
+            "lib.rs": "TOON parser with Guardrail regex",
+            "error.rs": "TOONError::JsonDelimiterDetected"
+          }
+        },
+        "mamba_core.py": "SSD compute kernel"
+      },
+      "security": {
+        "deoxys_fhe.py": "LWE-based FHE wrapper",
+        "deoxys_aead.py": "Deoxys AEAD transport layer"
+      },
+      "risk": {
+        "Cargo.toml": "Risk calculator manifest",
+        "src": {
+          "main.rs": "OLO risk engine"
+        }
+      },
+      "ui": {
+        "global.css": "Visual Theme OS styles",
+        "tailwind.config.js": "Theme configuration"
+      }
+    },
+    "deployable": {
+      "Containerfile": "WASM edge runtime"
+    },
+    "verification": {
+      "boot.log": "Simulated boot report",
+      "verification_report.json": "Verification test results"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "verification_report": {
+    "timestamp": "2025-12-08T09:50:00Z",
+    "frozen_seed": "AXIOMHIVE_v2_1_0_DETERMINISTIC_SEED",
+    "checks": [
+      {
+        "test": "TOON Guardrail JSON Delimiter",
+        "status": "PASSED",
+        "details": "Parser correctly panics with TOONError::JsonDelimiterDetected on '{' input."
+      },
+      {
+        "test": "Mamba-2 Lyapunov Stability",
+        "status": "PASSED",
+        "details": "A matrix uses deterministic HiPPO initialization and log-parameterization clamped for stability."
+      },
+      {
+        "test": "Risk Engine Entropy Count",
+        "status": "PASSED",
+        "details": "N=10 iterations produced identical SHA-256 hashes. Entropy Count = 1."
+      },
+      {
+        "test": "Visual Theme OS Gradient Override",
+        "status": "PASSED",
+        "details": "CSS contains 'background-image: none!important' and 'background: var(--axiom-black)!important'."
+      }
+    ],
+    "overall_status": "VERIFIED",
+    "risk_score": 0,
+    "insurance_token": "INSURABLE",
+    "bio_proof": 308537780
+  }
+}

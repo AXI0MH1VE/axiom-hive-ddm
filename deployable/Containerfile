@@ -1,0 +1,30 @@
+# AxiomHive Sovereign Manifold v2.1.0
+# WASM Edge Runtime with Frozen Seed State v1.0
+# Zero Entropy Law: C=0 enforced
+
+FROM rust:1.75 as builder
+
+# Install WASM target
+RUN rustup target add wasm32-wasi
+
+WORKDIR /app
+
+# Copy source
+COPY src/ /app/src/
+
+# Build TOON parser
+WORKDIR /app/src/core/toon-rs
+RUN cargo build --release --target wasm32-wasi --features frozen-seed
+
+# Build Risk Engine
+WORKDIR /app/src/risk
+RUN cargo build --release --target wasm32-wasi --features frozen-seed
+
+# Final WASM runtime
+FROM scratch
+
+COPY --from=builder /app/src/core/toon-rs/target/wasm32-wasi/release/toon-rs.wasm /toon-rs.wasm
+COPY --from=builder /app/src/risk/target/wasm32-wasi/release/risk_calculator.wasm /risk_calculator.wasm
+
+# Entry point with frozen seed flag
+ENTRYPOINT ["/risk_calculator.wasm", "--features", "frozen-seed"]
